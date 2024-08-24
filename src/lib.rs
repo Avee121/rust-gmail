@@ -1,51 +1,5 @@
 #![forbid(unsafe_code)]
-#![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
-
-//! # A Rust library to interact with the google Gmail API using a service account.
-//!
-//! Currently focused only on support for sending emails but this may change in the future.
-//! Available both as async (default) or as blocking using the "blocking" feature.
-//!
-//! Note that usage of this lib will require a google API service account with domain wide delegation for gmail setup with a google cloud project with the gmail API enabled.
-//! Links for more information:
-//!  - <https://cloud.google.com/iam/docs/service-account-overview>
-//!  - <https://support.google.com/a/answer/162106?hl=en&fl=1&sjid=12697421685211806668-NA>
-//!  - <https://developers.google.com/gmail/api/guides>
-//!
-//! ## Features
-//! There is currently only one feature, `blocking` which will add blocking alternatives to all async functions with the same name suffixed with `_blocking`.
-//! E.g. `send_email_blocking` instead of `send_email`.
-//!
-//! ## Examples
-//! Examples of how to use this crate.
-//!
-//! ### Async Example
-//! ```rust
-//! let email_client = GmailClient::builder(
-//!     "service_account.json",
-//!     "noreply@example.test",
-//! )?
-//! .build()
-//! .await?;
-//!
-//! email_client
-//!     .send_email("some_user@domain.test")
-//!     .await?;
-//! ```
-//!
-//! ### Blocking Example
-//! Note: Requires the `blocking` feature.
-//! ```rust
-//! let email_client = GmailClient::builder(
-//!     "service_account.json",
-//!     "noreply@example.test",
-//! )?
-//! .build_blocking()?;
-//!
-//! email_client
-//!     .send_email_blocking("some_user@domain.test")?;
-//! ```
 
 use std::path::Path;
 
@@ -125,7 +79,7 @@ pub struct GmailClient {
 
 impl GmailClient {
     /// Alias for [`GmailClientBuilder::new()`].
-    pub fn builder<P: AsRef<Path>, S: Into<String>>(
+    pub fn builder<S: Into<String>>(
         service_account_json: &str,
         send_from_email: S,
     ) -> Result<GmailClientBuilder> {
