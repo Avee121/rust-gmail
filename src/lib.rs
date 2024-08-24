@@ -74,12 +74,9 @@ pub struct GmailClientBuilder {
 impl<'a> GmailClientBuilder {
     /// Create a new `GmailClientBuilder`.
     /// Will return an error if unable to read & parse the `service_account_path` if, for example, the file does not exist or has an incorrect format.
-    pub fn new<P: AsRef<Path>, S: Into<String>>(
-        service_account_path: P,
-        send_from_email: S,
-    ) -> Result<Self> {
+    pub fn new<S: Into<String>>(service_account_json: &str, send_from_email: S) -> Result<Self> {
         Ok(Self {
-            service_account: ServiceAccount::load_from_file(service_account_path)?,
+            service_account: ServiceAccount::load_from_str(service_account_json)?,
             send_from_email: send_from_email.into(),
             mock_mode: false,
         })
@@ -129,10 +126,10 @@ pub struct GmailClient {
 impl GmailClient {
     /// Alias for [`GmailClientBuilder::new()`].
     pub fn builder<P: AsRef<Path>, S: Into<String>>(
-        service_account_path: P,
+        service_account_json: &str,
         send_from_email: S,
     ) -> Result<GmailClientBuilder> {
-        GmailClientBuilder::new(service_account_path, send_from_email)
+        GmailClientBuilder::new(service_account_json, send_from_email)
     }
 
     /// Send an email to `send_to_email` with the specified `subject` and `content`.
