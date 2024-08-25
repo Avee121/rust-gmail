@@ -53,6 +53,7 @@ async fn do_send_email(
         .post(SEND_EMAIL_ENDPOINT)
         .query(&SEND_EMAIL_QUERY_PARAMETERS)
         .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", token))
+        .header(reqwest::header::CONTENT_TYPE, "text/html")
         .json(&send_email_request)
         .send()
         .await?
