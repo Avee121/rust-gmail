@@ -14,7 +14,7 @@ pub struct GoogleSendEmailRequest {
 impl GoogleSendEmailRequest {
     pub fn new(from: &str, to: &str, subject: &str, content: &str) -> Self {
         let raw_message = base64::encode(format!(
-            "From: {}\r\nTo: {}\r\nSubject: {}\r\n\r\n{}\r\n",
+            "From: {}\r\nTo: {}\r\nSubject: {}\r\n\r\nhtml: {}\r\n",
             from, to, subject, content
         ));
         Self { raw: raw_message }

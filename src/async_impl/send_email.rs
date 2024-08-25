@@ -51,8 +51,6 @@ async fn do_send_email(
     let response_text = client
         .build()?
         .post(SEND_EMAIL_ENDPOINT)
-        .header("Content-Type", "text/html; charset=\"utf-8\"")
-        .header("Content-Transfer-Encoding", "base64")
         .query(&SEND_EMAIL_QUERY_PARAMETERS)
         .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", token))
         .json(&send_email_request)
