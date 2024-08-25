@@ -1,8 +1,6 @@
 #![forbid(unsafe_code)]
 #![deny(missing_debug_implementations)]
 
-use std::path::Path;
-
 use async_impl::{send_email::send_email, token::retrieve_token};
 use error::Result;
 use service_account::ServiceAccount;
@@ -23,6 +21,7 @@ pub struct GmailClientBuilder {
     service_account: ServiceAccount,
     send_from_email: String,
     mock_mode: bool,
+    timeout: Option<std::time::Duration>,
 }
 
 impl<'a> GmailClientBuilder {
@@ -33,12 +32,18 @@ impl<'a> GmailClientBuilder {
             service_account: ServiceAccount::load_from_str(service_account_json)?,
             send_from_email: send_from_email.into(),
             mock_mode: false,
+            timeout: None,
         })
     }
 
     /// Set "mock mode" which, if set to true, will log print the email instead of sending it.
     pub fn mock_mode(mut self, enabled: bool) -> Self {
         self.mock_mode = enabled;
+        self
+    }
+
+    pub fn timeout(mut self, timeout: std::time::Duration) -> Self {
+        self.timeout = Some(timeout);
         self
     }
 
@@ -51,6 +56,7 @@ impl<'a> GmailClientBuilder {
             send_from_email: self.send_from_email,
             token,
             mock_mode: self.mock_mode,
+            timeout: self.timeout,
         })
     }
 
@@ -75,6 +81,7 @@ pub struct GmailClient {
     send_from_email: String,
     token: String,
     mock_mode: bool,
+    timeout: Option<std::time::Duration>,
 }
 
 impl GmailClient {
@@ -99,6 +106,7 @@ impl GmailClient {
             content,
             &self.token,
             &self.send_from_email,
+            self.timeout,
             self.mock_mode,
         )
         .await

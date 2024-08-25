@@ -12,6 +12,7 @@ pub async fn send_email(
     content: &str,
     token: &str,
     send_from_email: &str,
+    timeout: Option<std::time::Duration>,
     mock_mode: bool,
 ) -> Result<()> {
     if mock_mode {
@@ -19,7 +20,15 @@ pub async fn send_email(
         return Ok(());
     }
 
-    do_send_email(receiver_email, subject, content, token, send_from_email).await
+    do_send_email(
+        receiver_email,
+        subject,
+        content,
+        token,
+        send_from_email,
+        timeout,
+    )
+    .await
 }
 
 async fn do_send_email(
@@ -28,12 +37,19 @@ async fn do_send_email(
     content: &str,
     token: &str,
     send_from_email: &str,
+    timeout: Option<std::time::Duration>,
 ) -> Result<()> {
     let send_email_request =
-        GoogleSendEmailRequest::new(&send_from_email, receiver_email, subject, content);
+        GoogleSendEmailRequest::new(send_from_email, receiver_email, subject, content);
 
-    let client = reqwest::Client::new();
+    let mut client = reqwest::Client::builder();
+
+    if let Some(timeout) = timeout {
+        client = client.timeout(timeout);
+    }
+
     let response_text = client
+        .build()?
         .post(SEND_EMAIL_ENDPOINT)
         .query(&SEND_EMAIL_QUERY_PARAMETERS)
         .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", token))
